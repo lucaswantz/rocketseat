@@ -1,9 +1,27 @@
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { SubscribeButton } from '../components/SubscribeButton';
+import { stripe } from '../services/stripe';
 
 import styles from './home.module.scss';
 
-export default function Home() {
+// Client-side
+// Server-side
+// Static Site Generation
+
+// Posto do blog
+
+// Conteudo (SSG)
+// Comentários (Client-side)
+
+interface HomeProps {
+  product: {
+    priceId: string;
+    amount: number;
+  }
+}
+
+export default function Home({ product }: HomeProps) {
   return (
     <>
       <Head>
@@ -21,14 +39,42 @@ export default function Home() {
 
           <p>
             Get access to all the publications <br />
-            <span>for $9.90 month</span>
+            <span>for {product.amount} month</span>
           </p>
 
-          <SubscribeButton />
+          <SubscribeButton priceId={product.priceId} />
         </section>
 
         <img src="/images/avatar.svg" alt="Girl coding" />
       </main>
     </>
   )
+}
+
+// Dinâmico
+// export const getServerSideProps: GetServerSideProps = async () => {
+
+// Estático
+export const getStaticProps: GetStaticProps = async () => {
+  // Trazer dados do produto junto
+  // const price = await stripe.prices.retrieve('price_1JL5tgDvYtJ96spWIHi3fKK5', {
+  //   expand: ['product']
+  // })
+
+  const price = await stripe.prices.retrieve('price_1JL5tgDvYtJ96spWIHi3fKK5');
+
+  const product = {
+    priceId: price.id,
+    amount: new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(price.unit_amount / 100),
+  };
+
+  return {
+    props: {
+      product
+    },
+    revalidate: 60 * 60 * 24 // 24 hours
+  }
 }
