@@ -5,6 +5,8 @@ interface SubscribeButtonProps {
 	priceId: string;
 }
 
+// getServerSideProps (SSR)
+//
 export function SubscribeButton({ priceId }: SubscribeButtonProps) {
 	const [session] = useSession();
 
@@ -13,6 +15,9 @@ export function SubscribeButton({ priceId }: SubscribeButtonProps) {
 			signIn('github');
 			return;
 		}
+
+		// criacao da chekcout session
+
 	}
 
 	return (
